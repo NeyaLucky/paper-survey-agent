@@ -5,6 +5,7 @@ import math
 from paper_survey_agent.models.paper import ProcessedPaper
 from paper_survey_agent.settings import settings
 from paper_survey_agent.tools.search_and_load_papers_txt.utils.downloader import download_papers
+from paper_survey_agent.tools.search_and_load_papers_txt.utils.maintenance import clear_data_directory
 from paper_survey_agent.tools.search_and_load_papers_txt.utils.ranking import rank_and_deduplicate
 from paper_survey_agent.tools.search_and_load_papers_txt.utils.retrieval import retrieve_papers
 from paper_survey_agent.tools.search_and_load_papers_txt.utils.text_extractor import convert_pdfs_to_text
@@ -14,6 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 async def search_and_load_papers_txt(query: str) -> list[ProcessedPaper]:
+    clear_data_directory()
+
     target_count = settings.MAX_PAPERS_TO_RETURN
 
     papers = await retrieve_papers(query=query)
