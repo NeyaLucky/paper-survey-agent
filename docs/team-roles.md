@@ -2,11 +2,11 @@
 
 ## Команда
 
-| Роль | Ім'я | Основна відповідальність | Хто працює |
-|------|------|--------------------------|--------------|
-| **Розробник 1** | TBD | Backend: API інтеграція та інструменти |Вероніка|
-| **Розробник 2** | TBD | LLM: Агент, промпти, валідація |Дарина|
-| **Розробник 3** | TBD | UI, Deployment, Документація |Денис|
+| Роль | Основна відповідальність | Хто працює |
+|------|--------------------------|--------------|
+| **Розробник 1** | Backend: API інтеграція та інструменти |Вероніка|
+| **Розробник 2** | LLM: Агент, промпти, валідація |Дарина|
+| **Розробник 3** | UI, Deployment, Документація |Денис|
 
 ---
 
@@ -17,12 +17,12 @@
 ### Завдання
 
 #### 1.1 Структура проєкту (спільно з Розробником 2)
-- [ ] Створити директорію `src/paper_survey_agent/apis/`
-- [ ] Створити директорію `src/paper_survey_agent/tools/`
-- [ ] Створити `__init__.py` файли
+- [X] Створити директорію `src/paper_survey_agent/apis/`
+- [X] Створити директорію `src/paper_survey_agent/tools/`
+- [X] Створити `__init__.py` файли
 
 #### 1.2 Моделі даних (`src/paper_survey_agent/models/`)
-- [ ] `paper.py` - модель `Paper`:
+- [X] `paper.py` - модель `Paper`:
   ```python
   class Paper(BaseModel):
       id: str
@@ -114,7 +114,7 @@
       
       model_config = SettingsConfigDict(env_file=".env")
   ```
-- [ ] Створити `.env.example`
+- [X] Створити `.env.dist`
 
 #### 2.3 Моделі даних (`src/paper_survey_agent/models/`)
 - [ ] `summary.py` - модель `PaperSummary`:
@@ -243,28 +243,30 @@
 - [ ] Створити `.gitignore`
 - [ ] Створити `requirements.txt` для deployment
 
-#### 3.2 Веб-інтерфейс (`src/paper_survey_agent/ui/app.py`)
-- [ ] Базовий Gradio інтерфейс:
-  ```python
-  import gradio as gr
-  
-  def create_app():
-      with gr.Blocks(title="Paper Survey Agent") as app:
-          gr.Markdown("# 📚 Paper Survey Agent")
-          
-          with gr.Row():
-              topic_input = gr.Textbox(label="Тема дослідження")
-              api_key_input = gr.Textbox(label="OpenAI API Key", type="password")
-          
-          submit_btn = gr.Button("🔍 Почати огляд", variant="primary")
-          
-          progress = gr.Textbox(label="Прогрес", lines=3)
-          output = gr.Markdown(label="Результат")
-          
-          submit_btn.click(fn=run_survey, inputs=[topic_input, api_key_input], outputs=[progress, output])
-      
-      return app
-  ```
+#### 3.2 Веб-інтерфейс (`demo/main.py`)
+
+- [ ] Базовий Gradio інтерфейс у `demo/main.py` (рекомендований варіант):
+
+```python
+import gradio as gr
+
+def create_app():
+  with gr.Blocks(title="Paper Survey Agent") as app:
+    gr.Markdown("# 📚 Paper Survey Agent")
+
+    with gr.Row():
+      topic_input = gr.Textbox(label="Тема дослідження")
+      api_key_input = gr.Textbox(label="OpenAI API Key", type="password")
+
+    submit_btn = gr.Button("🔍 Почати огляд", variant="primary")
+
+    progress = gr.Textbox(label="Прогрес", lines=3)
+    output = gr.Markdown(label="Результат")
+
+    submit_btn.click(fn=run_survey, inputs=[topic_input, api_key_input], outputs=[progress, output])
+
+  return app
+```
 - [ ] Відображення прогресу виконання
 - [ ] Форматування результату (Markdown)
 - [ ] Обробка помилок з повідомленнями

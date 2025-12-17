@@ -6,6 +6,9 @@
 paper-survey-agent/
 ├── .github/
 │   └── copilot-instructions.md     # Інструкції для Copilot
+├── demo/
+│   ├── __init__.py
+│   └── main.py                      # Gradio/Streamlit інтерфейс
 ├── docs/
 │   ├── assignment.md               # Опис завдання
 │   └── tasks.md                    # Цей файл зі списком завдань
@@ -37,9 +40,6 @@ paper-survey-agent/
 │       │   ├── __init__.py
 │       │   ├── client.py           # LLM клієнт (OpenAI/Anthropic)
 │       │   └── prompts.py          # Промпти для різних етапів
-│       └── ui/
-│           ├── __init__.py
-│           └── app.py              # Gradio/Streamlit інтерфейс
 ├── tests/
 │   ├── __init__.py
 │   ├── conftest.py                 # Pytest fixtures
@@ -57,7 +57,7 @@ paper-survey-agent/
 │   │   └── test_semantic_scholar.py
 │   ├── test_agent.py
 │   └── test_integration.py
-├── .env.example                    # Приклад змінних оточення
+├── .env.dist                    # Приклад змінних оточення
 ├── .gitignore
 ├── LICENSE
 ├── Makefile                        # Команди для розробки
@@ -71,17 +71,17 @@ paper-survey-agent/
 ## 1. Налаштування проєкту
 
 ### 1.1 Ініціалізація структури директорій
-- [ ] Створити директорію `src/paper_survey_agent/`
-- [ ] Створити директорію `src/paper_survey_agent/models/`
-- [ ] Створити директорію `src/paper_survey_agent/tools/`
-- [ ] Створити директорію `src/paper_survey_agent/apis/`
-- [ ] Створити директорію `src/paper_survey_agent/llm/`
-- [ ] Створити директорію `src/paper_survey_agent/ui/`
+- [X] Створити директорію `src/paper_survey_agent/`
+- [X] Створити директорію `src/paper_survey_agent/models/`
+- [X] Створити директорію `src/paper_survey_agent/tools/`
+- [X] Створити директорію `src/paper_survey_agent/apis/`
+- [X] Створити директорію `src/paper_survey_agent/llm/`
+- [X] Створити директорію `demo/` (Gradio/Streamlit UI)
 - [ ] Створити директорію `tests/`
-- [ ] Створити всі необхідні `__init__.py` файли
+- [] Створити всі необхідні `__init__.py` файли
 
 ### 1.2 Конфігурація проєкту
-- [ ] Оновити `pyproject.toml` з необхідними залежностями:
+- [X] Оновити `pyproject.toml` з необхідними залежностями:
   - `openai` або `anthropic` - для LLM
   - `arxiv` - для arXiv API
   - `semanticscholar` - для Semantic Scholar API
@@ -90,9 +90,9 @@ paper-survey-agent/
   - `python-dotenv` - для змінних оточення
   - `httpx` або `aiohttp` - для HTTP запитів
   - `pytest`, `pytest-cov`, `pytest-asyncio` - для тестування
-- [ ] Створити `.env.example` з прикладами змінних оточення
-- [ ] Оновити `.gitignore` для Python проєкту
-- [ ] Налаштувати віртуальне оточення (`python -m venv .venv`)
+- [X] Створити `.env.dist` з прикладами змінних оточення
+- [X] Оновити `.gitignore` для Python проєкту
+- [X] Налаштувати віртуальне оточення (`python -m venv .venv`)
 
 ### 1.3 Документація
 - [ ] Оновити `README.md` з:
@@ -115,7 +115,7 @@ paper-survey-agent/
 ### 2.2 Структури даних (models/)
 
 #### `src/paper_survey_agent/models/paper.py`
-- [ ] Створити Pydantic модель `Paper`:
+- [X] Створити Pydantic модель `Paper`:
   ```python
   class Paper(BaseModel):
       id: str                      # Унікальний ідентифікатор (DOI або arXiv ID)
