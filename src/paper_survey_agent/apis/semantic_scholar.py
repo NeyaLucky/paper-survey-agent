@@ -23,12 +23,14 @@ class SemanticScholarAPI(BaseScientificAPI):
     """Client for interacting with Semantic Scholar API.
 
     Provides methods to search for papers and retrieve detailed information.
-    Implements rate limiting (100 requests per 5 minutes) and retry logic.
+    Implements rate limiting (1 request per second with API key) and retry logic.
     """
 
     BASE_URL = "https://api.semanticscholar.org/graph/v1"
     
-    RATE_LIMIT_DELAY = 3.0
+    # Rate limit: 1 request per second (for API key holders)
+    # Without key: 100 requests per 5 minutes
+    RATE_LIMIT_DELAY = 1.0
     
     # Fields to retrieve from API
     PAPER_FIELDS = [
@@ -45,12 +47,12 @@ class SemanticScholarAPI(BaseScientificAPI):
         "externalIds",
     ]
 
-    def __init__(self, api_key: Optional[str] = None, timeout: int = 30):
+    def __init__(self, api_key: Optional[str] = None, timeout: int = 60):
         """Initialize Semantic Scholar API client.
         
         Args:
             api_key: Optional API key for higher rate limits (default: None)
-            timeout: Request timeout in seconds (default: 30)
+            timeout: Request timeout in seconds (default: 60)
         """
         self.api_key = api_key
         self.timeout = timeout
@@ -94,8 +96,8 @@ class SemanticScholarAPI(BaseScientificAPI):
 
     @retry(
         retry=retry_if_exception_type((httpx.TimeoutException, httpx.NetworkError)),
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=2, max=10),
+        stop=stop_after_attempt(2),
+        wait=wait_exponential(multiplier=2, min=3, max=10),
         reraise=True,
     )
     async def search(self, query: str, max_results: int = 10) -> list[Paper]:
@@ -135,6 +137,11 @@ class SemanticScholarAPI(BaseScientificAPI):
             return papers
             
         except httpx.HTTPStatusError as e:
+            # Handle rate limit error with exponential backoff
+            if e.response.status_code == 429:
+                logger.warning(f"Rate limit hit (429), waiting before retry...")
+                await asyncio.sleep(5)
+                raise httpx.NetworkError("Rate limit - triggering retry") from e
             logger.error(f"Semantic Scholar API error: {e.response.status_code} - {e.response.text}")
             raise
         except Exception as e:

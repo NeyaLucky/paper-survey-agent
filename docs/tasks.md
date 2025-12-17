@@ -209,7 +209,7 @@ paper-survey-agent/
 - [X] Запити до API:
   - Base URL: `https://api.semanticscholar.org/graph/v1`
   - Поля для запиту: `title,authors,abstract,year,citationCount,url,openAccessPdf`
-- [X] Обробка rate limits (100 запитів/5 хв без ключа)
+- [X] Обробка rate limits (1 запит/сек з API ключем, 100 запитів/5 хв без ключа)
 
 ### 3.4 Агрегатор API (`src/paper_survey_agent/apis/__init__.py`)
 - [ ] Створити клас `PaperSearchAggregator`:

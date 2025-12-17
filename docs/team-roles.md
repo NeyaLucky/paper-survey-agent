@@ -51,7 +51,7 @@
   - [X] HTTP клієнт (httpx або aiohttp)
   - [X] Метод `search(query: str, max_results: int) -> list[Paper]`
   - [X] Конвертація JSON у модель `Paper`
-- [X] Обробка rate limits (100 req/5 min)
+- [X] Обробка rate limits (1 req/sec з API ключем, 100 req/5 min без ключа)
 - [X] Retry логіка з exponential backoff
 
 #### 1.5 Базовий клас API (`src/paper_survey_agent/apis/base.py`)

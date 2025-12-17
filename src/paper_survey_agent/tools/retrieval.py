@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import os
 from typing import Optional
 
 from paper_survey_agent.apis import ArxivAPI, SemanticScholarAPI
@@ -42,6 +43,12 @@ async def retrieve_papers(
     
     # Normalize source names (case-insensitive)
     sources = [s.lower().strip() for s in sources]
+    
+    # Load API key from environment if not provided
+    if semantic_scholar_api_key is None:
+        semantic_scholar_api_key = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
+        if semantic_scholar_api_key:
+            logger.info("Using Semantic Scholar API key from environment")
     
     logger.info(
         f"Retrieving papers: query='{query}', sources={sources}, "
@@ -99,25 +106,77 @@ async def retrieve_papers(
 
 
 async def _fetch_from_arxiv(query: str, max_results: int) -> list[Paper]:
-    """Fetch papers from arXiv API.
+    """Fetch papers from arXiv API with iterative fetching until max_results with PDF.
     
     Args:
         query: Search query
-        max_results: Maximum number of results
+        max_results: Target number of papers with PDF to return
         
     Returns:
-        List of Paper objects from arXiv
+        List of Paper objects from arXiv (all with PDF URLs)
         
     Raises:
         Exception: If arXiv API call fails
     """
-    logger.debug(f"Fetching from arXiv: query='{query}', max_results={max_results}")
+    logger.debug(f"Fetching from arXiv: query='{query}', target={max_results} papers with PDF")
     
     try:
         api = ArxivAPI()
-        papers = await api.search(query, max_results=max_results)
-        logger.info(f"arXiv returned {len(papers)} papers")
-        return papers
+        papers_with_pdf = []
+        batch_size = max_results
+        max_iterations = 5  # Prevent infinite loops
+        iteration = 0
+        
+        while len(papers_with_pdf) < max_results and iteration < max_iterations:
+            iteration += 1
+            # Fetch batch
+            papers = await api.search(query, max_results=batch_size)
+            
+            if not papers:
+                logger.info(f"arXiv returned no more papers, stopping at {len(papers_with_pdf)} papers")
+                break
+            
+            # Filter for PDF and add new unique papers
+            existing_ids = {p.id for p in papers_with_pdf}
+            new_papers = [p for p in papers if p.pdf_url and p.id not in existing_ids]
+            papers_with_pdf.extend(new_papers)
+            
+            logger.debug(
+                f"Iteration {iteration}: fetched {len(papers)}, "
+                f"{len(new_papers)} new with PDF, total: {len(papers_with_pdf)}/{max_results}"
+            )
+            
+            # If we got all we need, stop
+            if len(papers_with_pdf) >= max_results:
+                papers_with_pdf = papers_with_pdf[:max_results]
+                break
+            
+            # If we got fewer papers than requested, no more available
+            if len(papers) < batch_size:
+                logger.info(f"Reached end of arXiv results at {len(papers_with_pdf)} papers")
+                break
+            
+            # Increase batch size for next iteration to fill gaps faster
+            batch_size = (max_results - len(papers_with_pdf)) * 2
+        
+        # Check if we got any papers
+        if len(papers_with_pdf) == 0:
+            logger.error(f"arXiv: No papers with PDF found after {iteration} iterations")
+            raise ValueError(
+                f"No papers with PDF found from arXiv for query: '{query}'"
+            )
+        
+        # Warn if we got fewer than requested
+        if len(papers_with_pdf) < max_results:
+            logger.warning(
+                f"arXiv: Only found {len(papers_with_pdf)} papers with PDF "
+                f"after {iteration} iterations (target: {max_results})"
+            )
+        else:
+            logger.info(f"arXiv returned {len(papers_with_pdf)} papers with PDF (target: {max_results})")
+        
+        return papers_with_pdf
+        
     except Exception as e:
         logger.error(f"arXiv API error: {e}", exc_info=True)
         raise
@@ -128,29 +187,82 @@ async def _fetch_from_semantic_scholar(
     max_results: int,
     api_key: Optional[str] = None,
 ) -> list[Paper]:
-    """Fetch papers from Semantic Scholar API.
+    """Fetch papers from Semantic Scholar API with iterative fetching until max_results with PDF.
     
     Args:
         query: Search query
-        max_results: Maximum number of results
+        max_results: Target number of papers with PDF to return
         api_key: Optional API key for higher rate limits
         
     Returns:
-        List of Paper objects from Semantic Scholar
+        List of Paper objects from Semantic Scholar (all with PDF URLs)
         
     Raises:
         Exception: If Semantic Scholar API call fails
     """
     logger.debug(
         f"Fetching from Semantic Scholar: query='{query}', "
-        f"max_results={max_results}, authenticated={bool(api_key)}"
+        f"target={max_results} papers with PDF, authenticated={bool(api_key)}"
     )
     
     try:
         async with SemanticScholarAPI(api_key=api_key) as api:
-            papers = await api.search(query, max_results=max_results)
-            logger.info(f"Semantic Scholar returned {len(papers)} papers")
-            return papers
+            papers_with_pdf = []
+            batch_size = max_results * 2  # Start with 2x to account for filtering
+            max_iterations = 5  # With API key: 1 req/sec, can afford more iterations
+            iteration = 0
+            
+            while len(papers_with_pdf) < max_results and iteration < max_iterations:
+                iteration += 1
+                
+                # Fetch batch
+                papers = await api.search(query, max_results=batch_size)
+                
+                if not papers:
+                    logger.info(f"Semantic Scholar returned no papers, stopping at {len(papers_with_pdf)}")
+                    break
+                
+                # Filter for PDF and add new unique papers
+                existing_ids = {p.id for p in papers_with_pdf}
+                new_papers = [p for p in papers if p.pdf_url and p.id not in existing_ids]
+                papers_with_pdf.extend(new_papers)
+                
+                logger.debug(
+                    f"Iteration {iteration}: fetched {len(papers)}, "
+                    f"{len(new_papers)} new with PDF, total: {len(papers_with_pdf)}/{max_results}"
+                )
+                
+                # If we got all we need, stop
+                if len(papers_with_pdf) >= max_results:
+                    papers_with_pdf = papers_with_pdf[:max_results]
+                    break
+                
+                # If we got fewer papers than requested, no more available
+                if len(papers) < batch_size:
+                    logger.info(f"Reached end of Semantic Scholar results at {len(papers_with_pdf)} papers")
+                    break
+            
+            # Check if we got any papers
+            if len(papers_with_pdf) == 0:
+                logger.error(f"Semantic Scholar: No papers with PDF found after {iteration} iterations")
+                raise ValueError(
+                    f"No papers with PDF found from Semantic Scholar for query: '{query}'"
+                )
+            
+            # Warn if we got fewer than requested
+            if len(papers_with_pdf) < max_results:
+                logger.warning(
+                    f"Semantic Scholar: Only found {len(papers_with_pdf)} papers with PDF "
+                    f"after {iteration} iterations (target: {max_results})"
+                )
+            else:
+                logger.info(
+                    f"Semantic Scholar returned {len(papers_with_pdf)} papers with PDF "
+                    f"(target: {max_results})"
+                )
+            
+            return papers_with_pdf
+            
     except Exception as e:
         logger.error(f"Semantic Scholar API error: {e}", exc_info=True)
         raise
