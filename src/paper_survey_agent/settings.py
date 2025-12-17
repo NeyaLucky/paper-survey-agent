@@ -7,6 +7,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
+    ROOT_DIR: str = str(Path(__file__).parent.parent.parent.resolve())
+
     LLM_PROVIDER: str = "openrouter"
     LLM_MODEL: str = "openai/gpt-oss-120b:free"
     LLM_API_KEY: str | None = None
@@ -31,9 +33,14 @@ class Settings(BaseSettings):
     ARXIV_PAGE_SIZE: int = 10
     ARXIV_DELAY_SECONDS: int = 3
 
-    SEMANTIC_SCHOLAR_API_URL: str = "https://api.semanticscholar.org/graph/v1"
+    SEMANTIC_SCHOLAR_API_BASE_URL: str = "https://api.semanticscholar.org/graph/v1"
     SEMANTIC_SCHOLAR_API_KEY: str | None = None
     SEMANTIC_SCHOLAR_TIMEOUT: int = 60
+
+    DATA_DIR: str = ROOT_DIR + "/data"
+    PDF_DOWNLOAD_TIMEOUT: int = 30
+    PDF_MAX_CONCURRENT_DOWNLOADS: int = 5
+    USER_AGENT: str = "PaperSurveyAgent/1.0"
 
     LOG_LEVEL: str = "INFO"
 
