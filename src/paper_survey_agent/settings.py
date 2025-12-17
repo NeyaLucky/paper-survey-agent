@@ -17,6 +17,7 @@ class Settings(BaseSettings):
 
     MAX_PAPERS_TO_RETURN: int = 15
     MAX_RESULTS_PER_SOURCE: int = 20
+    MAX_RESULTS_RERANKED: int = MAX_RESULTS_PER_SOURCE * 2
     SEARCH_TIMEOUT: int = 300
 
     RANKING_FUZZY_THRESHOLD: int = 85

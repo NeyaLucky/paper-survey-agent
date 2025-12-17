@@ -1,5 +1,3 @@
-"""Tools for managing local storage and data cleanup."""
-
 import logging
 from pathlib import Path
 import shutil

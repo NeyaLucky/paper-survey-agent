@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 def rank_and_deduplicate(
     papers: list[Paper],
     topic: str,
-    top_k: int = settings.MAX_PAPERS_TO_RETURN,
+    top_k: int = settings.MAX_RESULTS_RERANKED,
     fuzzy_threshold: int = settings.RANKING_FUZZY_THRESHOLD,
 ) -> list[Paper]:
     logger.info(f"Ranking and deduplicating {len(papers)} papers for topic: '{topic}'")
