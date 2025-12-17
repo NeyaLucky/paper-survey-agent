@@ -69,11 +69,11 @@
   - [X] Обробка помилок окремих API
 
 #### 1.7 Інструмент: Ранжування (`src/paper_survey_agent/tools/ranking.py`)
-- [ ] Функція `rank_and_deduplicate(papers: list[Paper], topic: str, top_k: int = 15) -> list[Paper]`:
-  - [ ] Дедуплікація за ID та fuzzy matching назв
-  - [ ] Ранжування за релевантністю (TF-IDF або простий keyword matching)
-  - [ ] Врахування цитувань та дати
-  - [ ] Повернення топ-K результатів
+- [X] Функція `rank_and_deduplicate(papers: list[Paper], topic: str, top_k: int = 15) -> list[Paper]`:
+  - [X] Дедуплікація за ID та fuzzy matching назв
+  - [X] Ранжування за релевантністю (TF-IDF або простий keyword matching)
+  - [X] Врахування цитувань та дати
+  - [X] Повернення топ-K результатів
 
 #### 1.8 Тести для API та інструментів
 - [ ] `tests/test_apis/test_arxiv.py` - з моками
