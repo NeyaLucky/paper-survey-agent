@@ -20,3 +20,8 @@ class Paper(BaseModel):
 class ProcessedPaper(Paper):
     pdf_path: Path | None = Field(default=None, description="Local filesystem path to the downloaded PDF")
     txt_path: Path | None = Field(default=None, description="Local filesystem path to the extracted text content")
+
+
+class SummarizedPaper(ProcessedPaper):
+    summary: str = Field(..., description="A concise narrative summary of the paper")
+    key_findings: list[str] = Field(..., description="A list of distinct key findings or contributions")

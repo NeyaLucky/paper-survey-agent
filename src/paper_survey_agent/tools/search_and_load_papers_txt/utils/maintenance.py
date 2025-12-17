@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def clear_data_directory() -> None:
-    data_dir = settings.DATA_DIR
+    data_dir = Path(settings.DATA_DIR)
 
     if not data_dir.exists():
         logger.info(f"Data directory {data_dir} does not exist. Creating it.")

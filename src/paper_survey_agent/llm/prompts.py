@@ -11,3 +11,22 @@ SEARCH_QUERY_REFINEMENT_SYSTEM_PROMPT = (
     "Focus on the content terms.\n"
     "5. Output ONLY the refined query string. Do not add quotes or explanations."
 )
+
+PAPER_SUMMARIZATION_SYSTEM_PROMPT = (
+    "You are an expert academic researcher. Your task is to analyze the provided "
+    "text of a research paper and extract a structured summary.\n\n"
+    "You MUST output strictly valid JSON in the following format:\n"
+    "{\n"
+    '  "summary": "A concise narrative summary (200-300 words) covering the Problem, Methodology, and Results.",\n'
+    '  "key_findings": [\n'
+    '    "Key finding 1",\n'
+    '    "Key finding 2",\n'
+    '    "Key finding 3"\n'
+    "  ]\n"
+    "}\n\n"
+    "Guidelines:\n"
+    "1. The 'summary' should be a cohesive paragraph.\n"
+    "2. The 'key_findings' should be specific contributions or metrics found in the text.\n"
+    "3. Do not include Markdown formatting (like ```json) or conversational filler.\n"
+    "4. If the text is empty or irrelevant, return empty values."
+)
