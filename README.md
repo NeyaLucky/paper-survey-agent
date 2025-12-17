@@ -1,30 +1,123 @@
-# Paper Survey Agent
+# Paper Survey Agent 📚
 
-## ⚙️ Installation
+LLM-based агент для автоматизованого огляду наукової літератури.
 
-### 🔧 Set Up the Python Environment
+## 🎯 Опис проєкту
 
-#### 1. Clone the repository
+Цей проєкт автоматично:
+1. Шукає наукові статті з arXiv та Semantic Scholar
+2. Ранжує їх за релевантністю, цитуваннями та датою публікації
+3. Генерує структуровані резюме за допомогою LLM
+4. Створює узагальнений огляд літератури з висновками та рекомендаціями
+
+---
+
+## 🚀 Швидкий старт для команди
+
+### Варіант 1: Використання `uv` (рекомендовано)
+
+#### 1. Клонування репозиторію
 
 ```bash
-git clone REPO_NAME
-cd REPO_NAME
+git clone https://github.com/NeyaLucky/paper-survey-agent.git
+cd paper-survey-agent
 ```
 
-#### 2. Install `uv` — A fast Python package manager
+#### 2. Встановлення `uv` (якщо ще не встановлено)
 
 📖 [Installation guide](https://docs.astral.sh/uv/getting-started/installation/)
 
-#### 3. Create and activate a virtual environment
-
+**Linux/macOS:**
 ```bash
-uv venv
-source .venv/bin/activate
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Alternatively, you can use the predefined Makefile command:
+**Windows:**
+```bash
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+#### 3. Автоматичне налаштування через Makefile
 
 ```bash
 make install
 ```
-This will set up the virtual environment, install dependencies, and configure pre-commit hooks automatically.
+
+Ця команда автоматично:
+- Створить віртуальне середовище `.venv`
+- Встановить всі залежності
+- Налаштує pre-commit hooks
+
+#### 4. Активація віртуального середовища
+
+```bash
+source .venv/bin/activate  # Linux/macOS
+.venv\Scripts\activate     # Windows
+```
+
+---
+
+### Варіант 2: Стандартний Python (без uv)
+
+#### 1. Клонування репозиторію
+
+```bash
+git clone https://github.com/NeyaLucky/paper-survey-agent.git
+cd paper-survey-agent
+```
+
+#### 2. Створення віртуального середовища
+
+**Linux/macOS:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+**Windows:**
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+#### 3. Встановлення залежностей
+
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+Або встановлення в режимі розробки:
+```bash
+pip install -e .
+```
+
+---
+
+## 🔧 Використання
+
+### Тестування в Jupyter Notebook
+
+```bash
+cd notebooks
+jupyter notebook test_agent.ipynb
+```
+
+
+
+## 📚 Отримання API Ключів
+
+### OpenAI API Key (обов'язково)
+1. Зареєструйтесь на https://platform.openai.com/
+2. Перейдіть в API Keys
+3. Створіть новий ключ
+4. Додайте в `.env` файл як `OPENAI_API_KEY`
+
+### Semantic Scholar API Key (опційно, але рекомендовано)
+1. Зареєструйтесь на https://www.semanticscholar.org/product/api
+2. Подайте заявку на API key
+3. Додайте в `.env` файл як `SEMANTIC_SCHOLAR_API_KEY`
+
+**Примітка:** Semantic Scholar працює без ключа, але з обмеженням 100 запитів/5 хв.
+
+
