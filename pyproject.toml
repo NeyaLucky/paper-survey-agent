@@ -17,6 +17,7 @@ dependencies = [
     "rapidfuzz>=3.0.0",
     "tenacity>=8.0.0",
     "pymupdf>=1.26.7",
+    "litellm>=1.80.10",
 ]
 
 [dependency-groups]

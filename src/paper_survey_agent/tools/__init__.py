@@ -1,4 +1,5 @@
+from paper_survey_agent.tools.generate_search_query.generate_search_query import generate_search_query
 from paper_survey_agent.tools.search_and_load_papers_txt.search_and_load_papers_txt import search_and_load_papers_txt
 
 
-__all__ = ["search_and_load_papers_txt"]
+__all__ = ["search_and_load_papers_txt", "generate_search_query"]
