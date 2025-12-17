@@ -1,16 +1,29 @@
 [project]
-name = "python-repo-template"
+name = "paper-survey-agent"
 version = "0.1.0"
-description = "Description"
+description = "LLM-based agent for automated scientific literature survey"
 readme = "README.md"
 requires-python = ">=3.11"
+license = {text = "MIT"}
 
 dependencies = [
-    "rootutils",
+    "openai>=1.0.0",
+    "arxiv>=2.0.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "httpx>=0.25.0",
+    "gradio>=4.0.0",
+    "rapidfuzz>=3.0.0",
+    "tenacity>=8.0.0",
 ]
 
 [dependency-groups]
 dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.0.0",
     "ipykernel",
     "mypy",
     "pre-commit",

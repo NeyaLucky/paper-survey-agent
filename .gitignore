@@ -208,3 +208,13 @@ __marimo__/
 
 # Other directories to ignore
 data/
+
+# Project-specific
+*.pdf
+*.csv
+*.json
+!pyproject.json
+cache/
+logs/
+results/
+.DS_Store
