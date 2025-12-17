@@ -38,24 +38,24 @@
   ```
 
 #### 1.3 arXiv API (`src/paper_survey_agent/apis/arxiv.py`)
-- [ ] Встановити бібліотеку `arxiv`
-- [ ] Імплементувати клас `ArxivAPI`:
-  - [ ] Метод `search(query: str, max_results: int) -> list[Paper]`
-  - [ ] Метод `get_paper_details(paper_id: str) -> Paper`
-  - [ ] Конвертація результатів у модель `Paper`
-- [ ] Обробка помилок та timeout
-- [ ] Логування запитів
+- [X] Встановити бібліотеку `arxiv`
+- [X] Імплементувати клас `ArxivAPI`:
+  - [X] Метод `search(query: str, max_results: int) -> list[Paper]`
+  - [X] Метод `get_paper_details(paper_id: str) -> Paper`
+  - [X] Конвертація результатів у модель `Paper`
+- [X] Обробка помилок та timeout
+- [X] Логування запитів
 
 #### 1.4 Semantic Scholar API (`src/paper_survey_agent/apis/semantic_scholar.py`)
-- [ ] Імплементувати клас `SemanticScholarAPI`:
-  - [ ] HTTP клієнт (httpx або aiohttp)
-  - [ ] Метод `search(query: str, max_results: int) -> list[Paper]`
-  - [ ] Конвертація JSON у модель `Paper`
-- [ ] Обробка rate limits (100 req/5 min)
-- [ ] Retry логіка з exponential backoff
+- [X] Імплементувати клас `SemanticScholarAPI`:
+  - [X] HTTP клієнт (httpx або aiohttp)
+  - [X] Метод `search(query: str, max_results: int) -> list[Paper]`
+  - [X] Конвертація JSON у модель `Paper`
+- [X] Обробка rate limits (100 req/5 min)
+- [X] Retry логіка з exponential backoff
 
 #### 1.5 Базовий клас API (`src/paper_survey_agent/apis/base.py`)
-- [ ] Абстрактний клас `BaseScientificAPI`:
+- [X] Абстрактний клас `BaseScientificAPI`:
   ```python
   class BaseScientificAPI(ABC):
       @abstractmethod
@@ -63,10 +63,10 @@
   ```
 
 #### 1.6 Інструмент: Отримання публікацій (`src/paper_survey_agent/tools/retrieval.py`)
-- [ ] Функція `retrieve_papers(query: str, sources: list[str] = None) -> list[Paper]`:
-  - [ ] Паралельний виклик arXiv та Semantic Scholar
-  - [ ] Об'єднання результатів
-  - [ ] Обробка помилок окремих API
+- [X] Функція `retrieve_papers(query: str, sources: list[str] = None) -> list[Paper]`:
+  - [X] Паралельний виклик arXiv та Semantic Scholar
+  - [X] Об'єднання результатів
+  - [X] Обробка помилок окремих API
 
 #### 1.7 Інструмент: Ранжування (`src/paper_survey_agent/tools/ranking.py`)
 - [ ] Функція `rank_and_deduplicate(papers: list[Paper], topic: str, top_k: int = 15) -> list[Paper]`:

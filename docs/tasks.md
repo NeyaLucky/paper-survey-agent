@@ -177,7 +177,7 @@ paper-survey-agent/
 ## 3. Інтеграція з API наукових джерел
 
 ### 3.1 Базовий клас API (`src/paper_survey_agent/apis/base.py`)
-- [ ] Створити абстрактний базовий клас `BaseScientificAPI`:
+- [X] Створити абстрактний базовий клас `BaseScientificAPI`:
   ```python
   class BaseScientificAPI(ABC):
       @abstractmethod
@@ -186,30 +186,30 @@ paper-survey-agent/
       @abstractmethod
       async def get_paper_details(self, paper_id: str) -> Paper | None: ...
   ```
-- [ ] Додати спільну логіку для retry та rate limiting
+- [X] Додати спільну логіку для retry та rate limiting
 
 ### 3.2 arXiv API (`src/paper_survey_agent/apis/arxiv.py`)
-- [ ] Встановити бібліотеку `arxiv` (`pip install arxiv`)
-- [ ] Імплементувати клас `ArxivAPI(BaseScientificAPI)`:
-  - [ ] Метод `search()` - пошук публікацій за запитом
-  - [ ] Метод `get_paper_details()` - отримання деталей публікації
-  - [ ] Конвертація результатів у модель `Paper`
-- [ ] Налаштувати параметри пошуку:
+- [X] Встановити бібліотеку `arxiv` (`pip install arxiv`)
+- [X] Імплементувати клас `ArxivAPI(BaseScientificAPI)`:
+  - [X] Метод `search()` - пошук публікацій за запитом
+  - [X] Метод `get_paper_details()` - отримання деталей публікації
+  - [X] Конвертація результатів у модель `Paper`
+- [X] Налаштувати параметри пошуку:
   - `sort_by` - сортування (relevance, lastUpdatedDate, submittedDate)
   - `sort_order` - порядок (ascending, descending)
   - `max_results` - максимальна кількість результатів
-- [ ] Обробка категорій arXiv (cs.CL, cs.AI, cs.LG, тощо)
+- [X] Обробка категорій arXiv (cs.CL, cs.AI, cs.LG, тощо)
 
 ### 3.3 Semantic Scholar API (`src/paper_survey_agent/apis/semantic_scholar.py`)
-- [ ] Зареєструватися для отримання API ключа (опційно, але рекомендовано)
-- [ ] Імплементувати клас `SemanticScholarAPI(BaseScientificAPI)`:
-  - [ ] Метод `search()` - пошук через `/paper/search` endpoint
-  - [ ] Метод `get_paper_details()` - отримання через `/paper/{paper_id}`
-  - [ ] Конвертація результатів у модель `Paper`
-- [ ] Запити до API:
+- [X] Зареєструватися для отримання API ключа (опційно, але рекомендовано)
+- [X] Імплементувати клас `SemanticScholarAPI(BaseScientificAPI)`:
+  - [X] Метод `search()` - пошук через `/paper/search` endpoint
+  - [X] Метод `get_paper_details()` - отримання через `/paper/{paper_id}`
+  - [X] Конвертація результатів у модель `Paper`
+- [X] Запити до API:
   - Base URL: `https://api.semanticscholar.org/graph/v1`
   - Поля для запиту: `title,authors,abstract,year,citationCount,url,openAccessPdf`
-- [ ] Обробка rate limits (100 запитів/5 хв без ключа)
+- [X] Обробка rate limits (100 запитів/5 хв без ключа)
 
 ### 3.4 Агрегатор API (`src/paper_survey_agent/apis/__init__.py`)
 - [ ] Створити клас `PaperSearchAggregator`:
@@ -257,12 +257,12 @@ async def retrieve_papers(query: str, sources: list[str] = None) -> list[Paper]
 **Опис:** Отримує публікації з наукових API за пошуковим запитом.
 
 **Завдання:**
-- [ ] Імплементувати функцію `retrieve_papers()`
-- [ ] Викликати arXiv та Semantic Scholar API паралельно
-- [ ] Об'єднати результати з різних джерел
-- [ ] Обробити помилки окремих API (продовжувати з іншими)
-- [ ] Логувати кількість знайдених публікацій
-- [ ] Повернути список об'єктів `Paper`
+- [X] Імплементувати функцію `retrieve_papers()`
+- [X] Викликати arXiv та Semantic Scholar API паралельно
+- [X] Об'єднати результати з різних джерел
+- [X] Обробити помилки окремих API (продовжувати з іншими)
+- [X] Логувати кількість знайдених публікацій
+- [X] Повернути список об'єктів `Paper`
 
 **Параметри:**
 - `query` - пошуковий запит
