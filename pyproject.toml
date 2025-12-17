@@ -16,6 +16,7 @@ dependencies = [
     "gradio>=4.0.0",
     "rapidfuzz>=3.0.0",
     "tenacity>=8.0.0",
+    "pymupdf>=1.26.7",
 ]
 
 [dependency-groups]
