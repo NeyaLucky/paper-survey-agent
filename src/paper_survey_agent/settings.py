@@ -14,8 +14,8 @@ class Settings(BaseSettings):
     LLM_TEMPERATURE: float = 0.7
     LLM_MAX_TOKENS: int = 1024
 
-    MAX_PAPERS_TO_RETURN: int = 15
-    MAX_RESULTS_PER_SOURCE: int = 20
+    MAX_PAPERS_TO_RETURN: int = 10
+    MAX_RESULTS_PER_SOURCE: int = 10
     MAX_RESULTS_RERANKED: int = MAX_RESULTS_PER_SOURCE * 2
     SEARCH_TIMEOUT: int = 300
 

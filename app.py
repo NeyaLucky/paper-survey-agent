@@ -35,7 +35,13 @@ def format_paper_summaries(papers) -> str:
             authors_str += " et al."
 
         output.append(f"### {i}. {paper.title}")
-        output.append(f"**{authors_str}** • {paper.published}")
+        pub = getattr(paper, "published_date", None)
+        if hasattr(pub, "isoformat"):
+            pub_str = pub.isoformat()
+        else:
+            pub_str = str(pub) if pub else "n.d."
+
+        output.append(f"**{authors_str}** • {pub_str}")
         if paper.pdf_url:
             output.append(f"[📄 PDF]({paper.pdf_url})")
         output.append(f"\n{paper.summary}\n")
@@ -116,8 +122,9 @@ def create_demo() -> gr.Blocks:
                 "🚀 Generate Literature Review",
                 variant="primary",
                 size="lg",
+                elem_id="submit-btn",
             )
-            clear_btn = gr.Button("🗑️ Clear", variant="secondary")
+            clear_btn = gr.Button("🗑️ Clear", variant="secondary", elem_id="clear-btn")
 
         loading_status = gr.Markdown(value="", visible=False)
 
@@ -144,7 +151,7 @@ def create_demo() -> gr.Blocks:
                 "",
                 gr.update(visible=False),
                 gr.update(
-                    value="⏳ **Processing...** Searching papers, downloading PDFs, and generating your literature review. This may take a few minutes.",
+                    value="⏳ **Processing...**",
                     visible=True,
                 ),
             ),
@@ -176,6 +183,17 @@ custom_css = """
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 8px;
+}
+
+#submit-btn, #clear-btn {
+    padding: 14px 28px !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+}
+
+#submit-btn {
+    background: linear-gradient(90deg, #ff7a18 0%, #ff4e00 100%) !important;
+    color: white !important;
 }
 """
 
