@@ -14,6 +14,10 @@ format: ## Format code and fix linting issues
 	uv run ruff format
 	uv run ruff check --fix
 
+.PHONY: run-app
+run-app: ## Run Gradio application
+	@uv run python app.py
+
 .PHONY: help
 help: ## Show this help message
 	@uv run python -c "import re; \

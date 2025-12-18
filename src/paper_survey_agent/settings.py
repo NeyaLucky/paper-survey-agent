@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     ROOT_DIR: str = str(Path(__file__).parent.parent.parent.resolve())
 
     LLM_PROVIDER: str = "openrouter"
-    LLM_MODEL: str = "openai/gpt-oss-120b:free"
+    LLM_MODEL: str = "meta-llama/llama-3.3-70b-instruct:free"
     LLM_API_KEY: str | None = None
     LLM_TEMPERATURE: float = 0.7
     LLM_MAX_TOKENS: int = 1024
