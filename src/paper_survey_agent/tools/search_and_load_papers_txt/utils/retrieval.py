@@ -1,10 +1,10 @@
 import asyncio
 import os
-from typing import Optional
 
 from loguru import logger
 
-from paper_survey_agent.apis import ArxivAPI, SemanticScholarAPI
+from paper_survey_agent.apis.arxiv import ArxivAPI
+from paper_survey_agent.apis.semantic_scholar import SemanticScholarAPI
 from paper_survey_agent.models.paper import Paper
 from paper_survey_agent.settings import settings
 

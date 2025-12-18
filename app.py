@@ -161,8 +161,6 @@ def create_demo() -> gr.Blocks:
                     value="",
                     info="Your API key is not stored and only used for this session",
                 )
-
-            with gr.Row():
                 provider = gr.Dropdown(
                     label="LLM Provider",
                     choices=list(LLM_PROVIDERS.keys()),
