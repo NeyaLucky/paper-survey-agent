@@ -7,8 +7,8 @@ from loguru import logger
 
 
 sys.path.insert(0, str(Path(__file__).parent / "src"))
-from src.paper_survey_agent.agent import PaperSurveyAgent
-from src.paper_survey_agent.llm.client import llm_client
+from paper_survey_agent.agent import PaperSurveyAgent
+from paper_survey_agent.llm.client import llm_client
 
 
 LLM_PROVIDERS = {
