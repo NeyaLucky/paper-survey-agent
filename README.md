@@ -1,8 +1,11 @@
 ---
 title: Paper Survey Agent
 emoji: 📑
+description: Ask questions about research papers and get structured papers survey
 sdk: gradio
 sdk_version: 6.1.0
+colorFrom: blue
+colorTo: purple
 app_file: app.py
 pinned: false
 license: mit
@@ -12,8 +15,6 @@ tags:
   - arxiv
   - semantic-scholar
   - llm-agent
-  - research
-python_version: 3.11
 ---
 
 # Paper Survey Agent
