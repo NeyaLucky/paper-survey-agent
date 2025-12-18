@@ -8,6 +8,28 @@ from loguru import logger
 
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 from src.paper_survey_agent.agent import PaperSurveyAgent
+from src.paper_survey_agent.llm.client import llm_client
+
+
+LLM_PROVIDERS = {
+    "OpenRouter": {
+        "models": [
+            "meta-llama/llama-3.3-70b-instruct:free",
+            "amazon/nova-2-lite-v1:free",
+            "qwen/qwen3-235b-a22b:free",
+            "openai/gpt-oss-120b:free",
+        ],
+        "default": "meta-llama/llama-3.3-70b-instruct:free",
+    },
+    "Groq": {
+        "models": [
+            "groq/llama-3.1-8b-instant",
+            "groq/openai/gpt-oss-120b",
+            "groq/qwen/qwen3-32b",
+        ],
+        "default": "groq/llama-3.1-8b-instant",
+    },
+}
 
 
 MAIN_HEADER = """
@@ -56,10 +78,25 @@ def format_paper_summaries(papers) -> str:
     return "\n".join(output)
 
 
-async def run_survey_agent(topic: str, progress=gr.Progress()) -> tuple[str, str, gr.update, gr.update]:
+async def run_survey_agent(
+    topic: str,
+    api_key: str,
+    provider: str,
+    model: str,
+    progress=gr.Progress(),
+) -> tuple[str, str, gr.update, gr.update]:
     if not topic or not topic.strip():
         error_msg = "⚠️ **Input Required**: Please enter a research topic to begin."
         return "", "", gr.update(visible=False), gr.update(value=error_msg, visible=True)
+
+    if not api_key or not api_key.strip():
+        error_msg = "⚠️ **API Key Required**: Please enter your API key."
+        return "", "", gr.update(visible=False), gr.update(value=error_msg, visible=True)
+
+    # Configure LLM client with user-provided settings
+    llm_client.api_key = api_key
+    llm_client.provider = provider.lower()
+    llm_client.model = model
 
     log_lines = []
 
@@ -92,13 +129,53 @@ async def run_survey_agent(topic: str, progress=gr.Progress()) -> tuple[str, str
         return "", "", gr.update(visible=False), gr.update(value=error_msg, visible=True)
 
 
-def run_survey_sync(topic: str, progress=gr.Progress()) -> tuple[str, str, gr.update, gr.update]:
-    return asyncio.run(run_survey_agent(topic, progress))
+def run_survey_sync(
+    topic: str,
+    api_key: str,
+    provider: str,
+    model: str,
+    progress=gr.Progress(),
+) -> tuple[str, str, gr.update, gr.update]:
+    return asyncio.run(run_survey_agent(topic, api_key, provider, model, progress))
+
+
+def update_models(provider: str) -> gr.Dropdown:
+    """Update model dropdown when provider changes."""
+    if provider in LLM_PROVIDERS:
+        models = LLM_PROVIDERS[provider]["models"]
+        default = LLM_PROVIDERS[provider]["default"]
+        return gr.Dropdown(choices=models, value=default, interactive=True)
+    return gr.Dropdown(choices=[], value=None, interactive=True)
 
 
 def create_demo() -> gr.Blocks:
     with gr.Blocks(title="Paper Survey Agent") as demo:
         gr.Markdown(MAIN_HEADER)
+
+        with gr.Accordion("⚙️ API Configuration", open=True):
+            with gr.Row():
+                api_key = gr.Textbox(
+                    label="API Key",
+                    placeholder="Enter your API key here...",
+                    type="password",
+                    value="",
+                    info="Your API key is not stored and only used for this session",
+                )
+
+            with gr.Row():
+                provider = gr.Dropdown(
+                    label="LLM Provider",
+                    choices=list(LLM_PROVIDERS.keys()),
+                    value="OpenRouter",
+                    info="Select your LLM provider",
+                )
+
+                model = gr.Dropdown(
+                    label="Model",
+                    choices=LLM_PROVIDERS["OpenRouter"]["models"],
+                    value=LLM_PROVIDERS["OpenRouter"]["default"],
+                    info="Select the model to use",
+                )
 
         gr.Markdown("## 💬 Enter Your Research Topic")
 
@@ -146,6 +223,12 @@ def create_demo() -> gr.Blocks:
                     show_label=False,
                 )
 
+        provider.change(
+            fn=update_models,
+            inputs=[provider],
+            outputs=[model],
+        )
+
         submit_btn.click(
             fn=lambda: (
                 "",
@@ -160,7 +243,7 @@ def create_demo() -> gr.Blocks:
             outputs=[survey_output, papers_output, results_section, loading_status],
         ).then(
             fn=run_survey_sync,
-            inputs=[topic_input],
+            inputs=[topic_input, api_key, provider, model],
             outputs=[survey_output, papers_output, results_section, loading_status],
         )
 

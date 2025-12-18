@@ -1,432 +1,292 @@
-# Розподіл завдань по ролях
+# Team Roles and Responsibilities
 
-## Команда
+## Team
 
-| Роль | Основна відповідальність | Хто працює |
-|------|--------------------------|--------------|
-| **Розробник 1** | Backend: API інтеграція та інструменти |Вероніка|
-| **Розробник 2** | LLM: Агент, промпти, валідація |Дарина|
-| **Розробник 3** | UI, Deployment, Документація |Денис|
+| Role | Primary Responsibility | Team Member |
+|------|------------------------|-------------|
+| **Developer 1** | Backend: API integration & tools | Veronika |
+| **Developer 2** | LLM: Agent, prompts, summarization | Daryna |
+| **Developer 3** | UI, Deployment, Documentation | Denys |
 
 ---
 
-## 👤 Розробник 1: Backend & API
+## 👤 Developer 1: Backend & API
 
-**Фокус:** Інтеграція з науковими API та базові інструменти пошуку/ранжування
+**Focus:** Scientific API integration and paper retrieval/processing tools
 
-### Завдання
+### Completed Tasks
 
-#### 1.1 Структура проєкту (спільно з Розробником 2)
-- [X] Створити директорію `src/paper_survey_agent/apis/`
-- [X] Створити директорію `src/paper_survey_agent/tools/`
-- [X] Створити `__init__.py` файли
+#### 1.1 Project Structure
+- [X] Create directory `src/paper_survey_agent/apis/`
+- [X] Create directory `src/paper_survey_agent/tools/`
+- [X] Create all `__init__.py` files
 
-#### 1.2 Моделі даних (`src/paper_survey_agent/models/`)
-- [X] `paper.py` - модель `Paper`:
-  ```python
-  class Paper(BaseModel):
-      id: str
-      title: str
-      authors: list[str]
-      abstract: str
-      published_date: date
-      source: str  # arxiv, semantic_scholar
-      url: str
-      pdf_url: str | None
-      citations_count: int | None
-      categories: list[str]
-  ```
+#### 1.2 Data Models (`src/paper_survey_agent/models/`)
+- [X] `paper.py` - Models: `Paper`, `ProcessedPaper`, `SummarizedPaper`
 
 #### 1.3 arXiv API (`src/paper_survey_agent/apis/arxiv.py`)
-- [X] Встановити бібліотеку `arxiv`
-- [X] Імплементувати клас `ArxivAPI`:
-  - [X] Метод `search(query: str, max_results: int) -> list[Paper]`
-  - [X] Метод `get_paper_details(paper_id: str) -> Paper`
-  - [X] Конвертація результатів у модель `Paper`
-- [X] Обробка помилок та timeout
-- [X] Логування запитів
+- [X] Install `arxiv` library
+- [X] Implement `ArxivAPI` class:
+  - [X] Method `search(query: str, max_results: int) -> list[Paper]`
+  - [X] Convert results to `Paper` model
+- [X] Error handling and timeout
+- [X] Request logging
 
 #### 1.4 Semantic Scholar API (`src/paper_survey_agent/apis/semantic_scholar.py`)
-- [X] Імплементувати клас `SemanticScholarAPI`:
-  - [X] HTTP клієнт (httpx або aiohttp)
-  - [X] Метод `search(query: str, max_results: int) -> list[Paper]`
-  - [X] Конвертація JSON у модель `Paper`
-- [X] Обробка rate limits (1 req/sec з API ключем, 100 req/5 min без ключа)
-- [X] Retry логіка з exponential backoff
+- [X] Implement `SemanticScholarAPI` class:
+  - [X] HTTP client (httpx)
+  - [X] Method `search(query: str, max_results: int) -> list[Paper]`
+  - [X] JSON to `Paper` conversion
+- [X] Rate limit handling
+- [X] Retry logic with exponential backoff
 
-#### 1.5 Базовий клас API (`src/paper_survey_agent/apis/base.py`)
-- [X] Абстрактний клас `BaseScientificAPI`:
-  ```python
-  class BaseScientificAPI(ABC):
-      @abstractmethod
-      async def search(self, query: str, max_results: int) -> list[Paper]: ...
-  ```
+#### 1.5 Base API Class (`src/paper_survey_agent/apis/base.py`)
+- [X] Abstract class `BaseScientificAPI`
 
-#### 1.6 Інструмент: Отримання публікацій (`src/paper_survey_agent/tools/retrieval.py`)
-- [X] Функція `retrieve_papers(query: str, sources: list[str] = None) -> list[Paper]`:
-  - [X] Паралельний виклик arXiv та Semantic Scholar
-  - [X] Об'єднання результатів
-  - [X] Обробка помилок окремих API
+#### 1.6 Search and Processing Tool (`src/paper_survey_agent/tools/search_and_load_papers_txt/`)
+- [X] Main function `search_and_load_papers_txt()`:
+  - [X] Parallel API calls to arXiv and Semantic Scholar
+  - [X] Result aggregation
+  - [X] Error handling per API
 
-#### 1.7 Інструмент: Ранжування (`src/paper_survey_agent/tools/ranking.py`)
-- [X] Функція `rank_and_deduplicate(papers: list[Paper], topic: str, top_k: int = 15) -> list[Paper]`:
-  - [X] Дедуплікація за ID та fuzzy matching назв
-  - [X] Ранжування за релевантністю (TF-IDF або простий keyword matching)
-  - [X] Врахування цитувань та дати
-  - [X] Повернення топ-K результатів
+#### 1.7 Utility Modules (`utils/`)
+- [X] `retrieval.py` - API orchestration
+- [X] `ranking.py` - Deduplication and ranking:
+  - [X] Fuzzy title matching
+  - [X] Combined scoring (relevance + citations + recency + PDF bonus)
+  - [X] Top-K selection
+- [X] `downloader.py` - PDF downloading:
+  - [X] Async downloads
+  - [X] Concurrent limiting
+  - [X] Caching
+- [X] `text_extractor.py` - PDF to text conversion
+- [X] `maintenance.py` - File management
 
-#### 1.8 Тести для API та інструментів
-- [ ] `tests/test_apis/test_arxiv.py` - з моками
-- [ ] `tests/test_apis/test_semantic_scholar.py` - з моками
-- [ ] `tests/test_tools/test_retrieval.py`
-- [ ] `tests/test_tools/test_ranking.py`
-
-### Залежності від інших
-- Потребує моделі `Paper` (робить сам)
-- Не залежить від LLM частини
-
-### Результат
-- Працюючий пошук публікацій з двох джерел
-- Дедуплікація та ранжування
-- Unit тести
+### Deliverables
+- ✅ Working paper search from two sources
+- ✅ Deduplication and ranking
+- ✅ PDF download and text extraction
 
 ---
 
-## 👤 Розробник 2: LLM & Agent
+## 👤 Developer 2: LLM & Agent
 
-**Фокус:** LLM інтеграція, агентна логіка, промпти, резюмування та синтез
+**Focus:** LLM integration, agent logic, prompts, summarization and synthesis
 
-### Завдання
+### Completed Tasks
 
-#### 2.1 Структура проєкту (спільно з Розробником 1)
-- [ ] Створити директорію `src/paper_survey_agent/llm/`
-- [ ] Створити `src/paper_survey_agent/agent.py`
-- [ ] Створити `src/paper_survey_agent/config.py`
+#### 2.1 Project Structure
+- [X] Create directory `src/paper_survey_agent/llm/`
+- [X] Create `src/paper_survey_agent/agent.py`
+- [X] Create `src/paper_survey_agent/settings.py`
 
-#### 2.2 Конфігурація (`src/paper_survey_agent/config.py`)
-- [ ] Клас `Settings` з Pydantic BaseSettings:
+#### 2.2 Configuration (`src/paper_survey_agent/settings.py`)
+- [X] `Settings` class with Pydantic BaseSettings:
+  - LLM settings (provider, model, API key, temperature, max_tokens)
+  - Search settings (max papers, timeout)
+  - Ranking weights
+  - API-specific settings
+- [X] Create `.env.dist`
+
+#### 2.3 LLM Client (`src/paper_survey_agent/llm/client.py`)
+- [X] `LLMClient` class:
+  - [X] Initialization with API key
+  - [X] `generate(prompt, system_prompt)` method
+  - [X] Multi-provider support via LiteLLM
+  - [X] Retry logic with tenacity
+
+#### 2.4 Prompts (`src/paper_survey_agent/llm/prompts.py`)
+- [X] `QUERY_GENERATION_SYSTEM_PROMPT` - search query refinement
+- [X] `PAPER_SUMMARIZATION_SYSTEM_PROMPT` - paper summarization
+- [X] `SURVEY_SYNTHESIS_SYSTEM_PROMPT` - literature review synthesis
+
+#### 2.5 Query Generation Tool (`src/paper_survey_agent/tools/generate_search_query/`)
+- [X] Function `generate_search_query(topic: str) -> str`:
+  - [X] LLM-based query optimization
+  - [X] Key concept extraction
+
+#### 2.6 Summarization Tool (`src/paper_survey_agent/tools/summarize_papers/`)
+- [X] Function `summarize_papers(papers: list[ProcessedPaper]) -> list[SummarizedPaper]`:
+  - [X] Read extracted text
+  - [X] LLM summarization with structured output
+  - [X] JSON parsing
+
+#### 2.7 Synthesis Tool (`src/paper_survey_agent/tools/synthesize_survey/`)
+- [X] Function `synthesize_survey(topic, summaries) -> str`:
+  - [X] Aggregate all summaries
+  - [X] Generate cohesive literature review
+
+#### 2.8 Agent (`src/paper_survey_agent/agent.py`)
+- [X] `PaperSurveyAgent` class:
   ```python
-  class Settings(BaseSettings):
-      openai_api_key: str
-      model_name: str = "gpt-4o-mini"
-      max_papers: int = 15
-      timeout: int = 300
-      
-      model_config = SettingsConfigDict(env_file=".env")
+  async def run(self, topic: str, progress_callback=None) -> tuple[list[SummarizedPaper], str] | None
   ```
-- [X] Створити `.env.dist`
+- [X] Pipeline stages:
+  1. Query refinement
+  2. Paper retrieval
+  3. Summarization
+  4. Synthesis
+- [X] Progress callback integration
 
-#### 2.3 Моделі даних (`src/paper_survey_agent/models/`)
-- [ ] `summary.py` - модель `PaperSummary`:
-  ```python
-  class PaperSummary(BaseModel):
-      paper_id: str
-      title: str
-      key_findings: list[str]  # мін. 3
-      methods: list[str]
-      contributions: list[str]
-      limitations: list[str]
-      relevance_score: float  # 0-1
-      summary_text: str
-  ```
-- [ ] `synthesis.py` - модель `SynthesisResult`:
-  ```python
-  class SynthesisResult(BaseModel):
-      topic: str
-      total_papers: int
-      general_conclusions: list[str]
-      current_trends: list[str]
-      common_methodologies: list[str]
-      future_directions: list[str]
-      synthesis_text: str
-      generated_at: datetime
-  ```
-
-#### 2.4 LLM клієнт (`src/paper_survey_agent/llm/client.py`)
-- [ ] Клас `OpenAIClient`:
-  - [ ] Ініціалізація з API ключем
-  - [ ] Метод `complete(messages: list[dict]) -> str`
-  - [ ] Метод `complete_json(messages: list[dict], schema: type) -> BaseModel`
-  - [ ] Обробка помилок та retry
-
-#### 2.5 Промпти (`src/paper_survey_agent/llm/prompts.py`)
-- [ ] `SYSTEM_PROMPT` - системний промпт агента
-- [ ] `PLANNING_PROMPT` - генерація пошукових запитів
-- [ ] `SUMMARIZATION_PROMPT` - резюме публікації
-- [ ] `SYNTHESIS_PROMPT` - синтез огляду
-
-#### 2.6 Інструмент: Планування (`src/paper_survey_agent/tools/planning.py`)
-- [ ] Функція `plan_queries(topic: str, llm_client) -> list[str]`:
-  - [ ] Використання LLM для генерації 5-8 запитів
-  - [ ] Валідація унікальності
-
-#### 2.7 Інструмент: Резюмування (`src/paper_survey_agent/tools/summarization.py`)
-- [ ] Функція `summarize_paper(paper: Paper, llm_client) -> PaperSummary`:
-  - [ ] Промпт з назвою та abstract
-  - [ ] Парсинг відповіді у `PaperSummary`
-
-#### 2.8 Інструмент: Синтез (`src/paper_survey_agent/tools/synthesis.py`)
-- [ ] Функція `synthesize_review(summaries: list[PaperSummary], topic: str, llm_client) -> SynthesisResult`:
-  - [ ] Об'єднання всіх резюме
-  - [ ] Генерація узагальненого огляду
-
-#### 2.9 Валідація (`src/paper_survey_agent/tools/validation.py`)
-- [ ] Функція `validate_summary(summary: PaperSummary) -> tuple[bool, list[str]]`
-- [ ] Функція `validate_synthesis(result: SynthesisResult) -> tuple[bool, list[str]]`
-
-#### 2.10 Агент (`src/paper_survey_agent/agent.py`)
-- [ ] Клас `PaperSurveyAgent`:
-  ```python
-  class PaperSurveyAgent:
-      async def run(self, topic: str) -> SynthesisResult:
-          # 1. Planning
-          queries = await self._planning_stage(topic)
-          # 2. Retrieval
-          papers = await self._retrieval_stage(queries)
-          # 3. Ranking
-          ranked = await self._ranking_stage(papers, topic)
-          # 4. Summarization
-          summaries = await self._summarization_stage(ranked)
-          # 5. Synthesis
-          result = await self._synthesis_stage(summaries, topic)
-          # 6. Validation
-          return result
-  ```
-- [ ] Callback для прогресу (для UI)
-- [ ] Обробка помилок на кожному етапі
-
-#### 2.11 Тести
-- [ ] `tests/test_tools/test_planning.py`
-- [ ] `tests/test_tools/test_summarization.py`
-- [ ] `tests/test_tools/test_synthesis.py`
-- [ ] `tests/test_tools/test_validation.py`
-- [ ] `tests/test_agent.py`
-
-### Залежності від інших
-- Використовує `Paper` модель від Розробника 1
-- Викликає `retrieve_papers` та `rank_and_deduplicate` від Розробника 1
-
-### Результат
-- Працюючий LLM клієнт
-- Всі промпти
-- Повний агент з пайплайном
-- Unit тести
+### Deliverables
+- ✅ Working LLM client
+- ✅ All prompts
+- ✅ Complete agent pipeline
+- ✅ Summarization and synthesis
 
 ---
 
-## 👤 Розробник 3: UI & Deployment
+## 👤 Developer 3: UI & Deployment
 
-**Фокус:** Веб-інтерфейс, деплой, документація
+**Focus:** Web interface, deployment, documentation
 
-### Завдання
+### Completed Tasks
 
-#### 3.1 Налаштування проєкту
-- [ ] Оновити `pyproject.toml` з усіма залежностями:
-  ```toml
-  [project]
-  name = "paper-survey-agent"
-  version = "0.1.0"
-  dependencies = [
-      "openai>=1.0.0",
-      "arxiv>=2.0.0",
-      "pydantic>=2.0.0",
-      "pydantic-settings>=2.0.0",
-      "python-dotenv>=1.0.0",
-      "httpx>=0.25.0",
-      "gradio>=4.0.0",
-      "rapidfuzz>=3.0.0",
-  ]
-  
-  [project.optional-dependencies]
-  dev = ["pytest", "pytest-cov", "pytest-asyncio"]
-  ```
-- [ ] Створити `.gitignore`
-- [ ] Створити `requirements.txt` для deployment
+#### 3.1 Project Configuration
+- [X] Update `pyproject.toml` with all dependencies
+- [X] Create `.gitignore`
+- [X] Create `requirements.txt` for deployment
 
-#### 3.2 Веб-інтерфейс (`demo/main.py`)
+#### 3.2 Web Interface (`app.py`)
+- [X] Gradio Blocks interface:
+  - [X] Header with title and description
+  - [X] API configuration section:
+    - [X] API key input (password)
+    - [X] Provider dropdown
+    - [X] Model dropdown (dynamic)
+  - [X] Research topic input
+  - [X] Example topics
+  - [X] Submit/Clear buttons
+  - [X] Progress display
+  - [X] Results (survey + paper summaries)
+- [X] Custom CSS styling
 
-- [ ] Базовий Gradio інтерфейс у `demo/main.py` (рекомендований варіант):
+#### 3.3 Entry Point (`app.py`)
+- [X] Main application entry point
+- [X] Gradio launch configuration
 
-```python
-import gradio as gr
+#### 3.4 HuggingFace Spaces Deployment
+- [X] Add Spaces metadata to README
+- [X] Create HuggingFace Space
+- [X] Connect GitHub repository
+- [X] Test deployment
 
-def create_app():
-  with gr.Blocks(title="Paper Survey Agent") as app:
-    gr.Markdown("# 📚 Paper Survey Agent")
+#### 3.5 Documentation
+- [X] Complete README.md:
+  - Project description
+  - Features list
+  - Architecture diagram
+  - Installation instructions
+  - Usage guide
+  - API key instructions
+  - Deployment guide
 
-    with gr.Row():
-      topic_input = gr.Textbox(label="Тема дослідження")
-      api_key_input = gr.Textbox(label="OpenAI API Key", type="password")
-
-    submit_btn = gr.Button("🔍 Почати огляд", variant="primary")
-
-    progress = gr.Textbox(label="Прогрес", lines=3)
-    output = gr.Markdown(label="Результат")
-
-    submit_btn.click(fn=run_survey, inputs=[topic_input, api_key_input], outputs=[progress, output])
-
-  return app
-```
-- [ ] Відображення прогресу виконання
-- [ ] Форматування результату (Markdown)
-- [ ] Обробка помилок з повідомленнями
-
-#### 3.3 Точка входу (`app.py` в корені)
-- [ ] Створити `app.py`:
-  ```python
-  from src.paper_survey_agent.ui.app import create_app
-  
-  if __name__ == "__main__":
-      app = create_app()
-      app.launch()
-  ```
-
-#### 3.4 Deployment на HuggingFace Spaces
-- [ ] Створити акаунт на HuggingFace (якщо немає)
-- [ ] Створити новий Space (Gradio SDK)
-- [ ] Завантажити файли або підключити GitHub
-- [ ] Протестувати deployment
-- [ ] Отримати публічний URL
-
-#### 3.5 Документація
-
-**README.md:**
-- [ ] Опис проєкту
-- [ ] Скріншот інтерфейсу
-- [ ] Інструкції встановлення
-- [ ] Інструкції запуску
-- [ ] Приклад використання
-- [ ] Посилання на HuggingFace Space
-
-**Лист для здачі:**
-- [ ] Підготувати текст листа (шаблон в tasks.md)
-- [ ] Зібрати інформацію від команди
-- [ ] Відправити після 19 грудня
-
-#### 3.6 Фінальне тестування
-- [ ] Протестувати повний flow локально
-- [ ] Протестувати на HuggingFace з 2-3 темами
-- [ ] Задокументувати знайдені проблеми
-
-### Залежності від інших
-- Чекає на готовий агент від Розробника 2
-- UI викликає `PaperSurveyAgent.run()`
-
-### Результат
-- Працюючий веб-інтерфейс
-- Задеплоєний сервіс на HuggingFace
-- README та документація
-- Готовий лист для здачі
+### Deliverables
+- ✅ Working web interface
+- ✅ Deployed service on HuggingFace Spaces
+- ✅ Complete documentation
 
 ---
 
-## 📅 Таймлайн та синхронізація
+## 📅 Timeline
 
-### День 1 (17 грудня)
+### Day 1 (December 17)
 
-| Час | Розробник 1 | Розробник 2 | Розробник 3 |
-|-----|-------------|-------------|-------------|
-| Ранок | Структура + моделі `Paper` | Структура + config | `pyproject.toml` + `.gitignore` |
-| День | arXiv API | LLM клієнт + промпти | Базовий UI (mock) |
-| Вечір | Semantic Scholar API | Моделі `Summary`, `Synthesis` | README (draft) |
+| Time | Developer 1 | Developer 2 | Developer 3 |
+|------|-------------|-------------|-------------|
+| Morning | Project structure + `Paper` model | Structure + config | `pyproject.toml` + `.gitignore` |
+| Day | arXiv API | LLM client + prompts | Basic UI |
+| Evening | Semantic Scholar API | Summarization | README draft |
 
-### День 2 (18 грудня - ДЕДЛАЙН)
+### Day 2 (December 18 - DEADLINE)
 
-| Час | Розробник 1 | Розробник 2 | Розробник 3 |
-|-----|-------------|-------------|-------------|
-| Ранок | `retrieve_papers` | `summarize_paper`, `synthesize_review` | Підключення UI до агента |
-| День | `rank_and_deduplicate` | Агент + валідація | Deployment на HuggingFace |
-| Вечір | Тести + фікси | Тести + фікси | Тестування + документація |
+| Time | Developer 1 | Developer 2 | Developer 3 |
+|------|-------------|-------------|-------------|
+| Morning | Retrieval tool | Survey synthesis | Connect UI to agent |
+| Day | Ranking + deduplication | Agent orchestration | HuggingFace deployment |
+| Evening | Testing + fixes | Testing + fixes | Testing + documentation |
 
 ---
 
-## 🔗 Точки інтеграції
+## 🔗 Integration Points
 
-### API між компонентами
+### Component APIs
 
 ```
-Розробник 1                    Розробник 2                    Розробник 3
+Developer 1                    Developer 2                    Developer 3
 ─────────────                  ─────────────                  ─────────────
     │                              │                              │
-    │  Paper модель                │                              │
+    │  Paper models                │                              │
     ├─────────────────────────────►│                              │
     │                              │                              │
-    │  retrieve_papers()           │                              │
-    ├─────────────────────────────►│                              │
-    │                              │                              │
-    │  rank_and_deduplicate()      │                              │
+    │  search_and_load_papers_txt()│                              │
     ├─────────────────────────────►│                              │
     │                              │                              │
     │                              │  PaperSurveyAgent           │
     │                              ├─────────────────────────────►│
     │                              │                              │
-    │                              │  run() -> SynthesisResult   │
+    │                              │  run() -> (summaries, survey)│
     │                              ├─────────────────────────────►│
 ```
 
-### Контракти (узгодити на початку)
+### Contracts
 
-**1. Модель Paper (Розробник 1 → Розробник 2):**
+**1. Paper Model (Developer 1 → Developer 2):**
 ```python
 class Paper(BaseModel):
     id: str
     title: str
     authors: list[str]
     abstract: str
-    published_date: date
+    published_date: date | None
     source: str
     url: str
-    pdf_url: str | None = None
-    citations_count: int | None = None
-    categories: list[str] = []
+    pdf_url: str | None
+    citations_count: int | None
+    categories: list[str]
 ```
 
-**2. Функція retrieve_papers (Розробник 1 → Розробник 2):**
+**2. Search Function (Developer 1 → Developer 2):**
 ```python
-async def retrieve_papers(query: str, max_results: int = 20) -> list[Paper]
+async def search_and_load_papers_txt(query: str) -> list[ProcessedPaper]
 ```
 
-**3. Функція rank_and_deduplicate (Розробник 1 → Розробник 2):**
-```python
-def rank_and_deduplicate(papers: list[Paper], topic: str, top_k: int = 15) -> list[Paper]
-```
-
-**4. Агент (Розробник 2 → Розробник 3):**
+**3. Agent (Developer 2 → Developer 3):**
 ```python
 class PaperSurveyAgent:
-    def __init__(self, api_key: str, model: str = "gpt-4o-mini"): ...
-    
-    async def run(self, topic: str, progress_callback: Callable = None) -> SynthesisResult: ...
+    async def run(self, topic: str, progress_callback=None) -> tuple[list[SummarizedPaper], str] | None
 ```
 
 ---
 
-## ✅ Чеклист готовності до здачі
+## ✅ Completion Checklist
 
-### Розробник 1
-- [ ] API arXiv працює
-- [ ] API Semantic Scholar працює
-- [ ] `retrieve_papers()` повертає публікації
-- [ ] `rank_and_deduplicate()` працює
-- [ ] Код запушений в репозиторій
+### Developer 1
+- [X] arXiv API works
+- [X] Semantic Scholar API works
+- [X] `search_and_load_papers_txt()` returns papers
+- [X] Ranking and deduplication works
+- [X] PDF download and text extraction works
+- [X] Code pushed to repository
 
-### Розробник 2
-- [ ] LLM клієнт працює
-- [ ] Всі промпти написані
-- [ ] Агент виконує повний пайплайн
-- [ ] Валідація працює
-- [ ] Код запушений в репозиторій
+### Developer 2
+- [X] LLM client works
+- [X] All prompts created
+- [X] Agent executes full pipeline
+- [X] Summarization works
+- [X] Survey synthesis works
+- [X] Code pushed to repository
 
-### Розробник 3
-- [ ] UI відображає форму введення
-- [ ] UI показує прогрес
-- [ ] UI відображає результат
-- [ ] Сервіс задеплоєний на HuggingFace
-- [ ] README оновлений
-- [ ] Лист підготовлений
+### Developer 3
+- [X] UI displays input form
+- [X] UI shows progress
+- [X] UI displays results
+- [X] Service deployed to HuggingFace
+- [X] README updated
+- [X] Documentation complete
 
-### Спільно
-- [ ] Локальний тест проходить
-- [ ] HuggingFace тест проходить
-- [ ] Проєкт зареєстрований (до 19.12)
-- [ ] Лист відправлений (після 19.12)
+### Joint
+- [X] Local testing passes
+- [X] HuggingFace testing passes
+- [X] Project registered
+- [X] Submission ready
