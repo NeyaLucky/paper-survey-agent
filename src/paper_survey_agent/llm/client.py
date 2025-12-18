@@ -1,4 +1,5 @@
-import os
+import contextlib
+import io
 from typing import Any
 
 from litellm import completion
@@ -43,7 +44,8 @@ class LLMClient:
                 },
             }
 
-            response = completion(**completion_params)
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                response = completion(**completion_params)
 
             content = response.choices[0].message.content
             return content.strip()

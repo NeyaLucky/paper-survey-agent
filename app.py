@@ -61,26 +61,29 @@ async def run_survey_agent(topic: str, progress=gr.Progress()) -> tuple[str, str
         error_msg = "⚠️ **Input Required**: Please enter a research topic to begin."
         return "", "", gr.update(visible=False), gr.update(value=error_msg, visible=True)
 
-    try:
-        progress(0, desc="🔍 Refining search query...")
-        agent = PaperSurveyAgent()
+    log_lines = []
 
-        progress(0.3, desc="📥 Searching and downloading papers...")
-        result = await agent.run(topic)
+    def progress_callback(step, message):
+        progress(step, desc=message)
+        log_lines.append(f"- {message}")
+
+    try:
+        agent = PaperSurveyAgent()
+        result = await agent.run(topic, progress_callback=progress_callback)
 
         if result is None:
             error_msg = "❌ **No Results**: No papers found or survey generation failed. Try a different topic."
-            return "", "", gr.update(visible=False), gr.update(value=error_msg, visible=True)
+            return (
+                "",
+                "",
+                gr.update(visible=False),
+                gr.update(value=error_msg + "\n" + "\n".join(log_lines), visible=True),
+            )
 
         summarized_papers, survey_report = result
-
-        progress(0.9, desc="✨ Formatting results...")
         papers_details = format_paper_summaries(summarized_papers)
 
-        progress(1.0, desc="✅ Complete!")
-
-        survey_formatted = f"# 📊 {topic}\n\n{survey_report}"
-
+        survey_formatted = f"# ⬇️ Survey\n\n{survey_report}"
         return survey_formatted, papers_details, gr.update(visible=True), gr.update(value="", visible=False)
 
     except Exception as e:
@@ -129,8 +132,6 @@ def create_demo() -> gr.Blocks:
         loading_status = gr.Markdown(value="", visible=False)
 
         with gr.Group(visible=False) as results_section:
-            gr.Markdown("## 📊 Survey Results")
-
             survey_output = gr.Markdown(
                 value="",
                 show_label=False,
