@@ -1,18 +1,13 @@
-"""arXiv API client for retrieving scientific papers."""
-
 from datetime import datetime
-import logging
 from typing import Optional
 
 import arxiv
+from loguru import logger
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from paper_survey_agent.apis.base import BaseScientificAPI
 from paper_survey_agent.models.paper import Paper
 from paper_survey_agent.settings import settings
-
-
-logger = logging.getLogger(__name__)
 
 
 class ArxivAPI(BaseScientificAPI):

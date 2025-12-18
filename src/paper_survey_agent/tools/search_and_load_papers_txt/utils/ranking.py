@@ -1,16 +1,13 @@
 from collections import Counter
 from datetime import datetime
-import logging
 import re
 from typing import Optional
 
+from loguru import logger
 from rapidfuzz import fuzz
 
 from paper_survey_agent.models.paper import Paper
 from paper_survey_agent.settings import settings
-
-
-logger = logging.getLogger(__name__)
 
 
 def rank_and_deduplicate(
@@ -42,7 +39,7 @@ def rank_and_deduplicate(
     if scored_papers:
         logger.info(
             f"Returning top {len(top_papers)} papers. "
-            f"Score range: {scored_papers[0][1]:.3f} - {scored_papers[min(top_k-1, len(scored_papers)-1)][1]:.3f}"
+            f"Score range: {scored_papers[0][1]:.3f} - {scored_papers[min(top_k - 1, len(scored_papers) - 1)][1]:.3f}"
         )
 
     return top_papers
@@ -64,9 +61,7 @@ def _deduplicate_papers(papers: list[Paper], fuzzy_threshold: int) -> list[Paper
         for seen_title, seen_paper in seen_titles:
             similarity = fuzz.ratio(normalized_title, seen_title)
             if similarity >= fuzzy_threshold:
-                logger.debug(
-                    f"Fuzzy duplicate found ({similarity}% similar): " f"'{paper.title}' ≈ '{seen_paper.title}'"
-                )
+                logger.debug(f"Fuzzy duplicate found ({similarity}% similar): '{paper.title}' ≈ '{seen_paper.title}'")
                 if paper.citations_count and not seen_paper.citations_count:
                     deduplicated.remove(seen_paper)
                     seen_ids.remove(seen_paper.id)

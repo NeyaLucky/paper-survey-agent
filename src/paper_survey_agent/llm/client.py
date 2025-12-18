@@ -1,14 +1,11 @@
-import logging
 import os
 from typing import Any
 
 from litellm import completion
+from loguru import logger
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from paper_survey_agent.settings import settings
-
-
-logger = logging.getLogger(__name__)
 
 
 class LLMClient:

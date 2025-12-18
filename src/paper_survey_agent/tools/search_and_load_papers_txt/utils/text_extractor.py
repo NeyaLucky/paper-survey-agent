@@ -1,14 +1,11 @@
 import asyncio
-import logging
 from pathlib import Path
 
 import aiofiles
+from loguru import logger
 import pymupdf
 
 from paper_survey_agent.settings import settings
-
-
-logger = logging.getLogger(__name__)
 
 
 def extract_text_from_pdf_sync(pdf_path: Path) -> str:

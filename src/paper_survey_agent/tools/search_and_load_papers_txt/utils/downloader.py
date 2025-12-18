@@ -1,17 +1,14 @@
 import asyncio
-import logging
 from pathlib import Path
 import re
 from typing import Optional
 
 import httpx
+from loguru import logger
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from paper_survey_agent.models.paper import Paper
 from paper_survey_agent.settings import settings
-
-
-logger = logging.getLogger(__name__)
 
 
 async def download_papers(papers: list[Paper], destination_dir: str | Path | None = None) -> dict[str, Path]:

@@ -1,14 +1,12 @@
 import asyncio
-import logging
 import os
 from typing import Optional
+
+from loguru import logger
 
 from paper_survey_agent.apis import ArxivAPI, SemanticScholarAPI
 from paper_survey_agent.models.paper import Paper
 from paper_survey_agent.settings import settings
-
-
-logger = logging.getLogger(__name__)
 
 
 async def retrieve_papers(
@@ -27,7 +25,7 @@ async def retrieve_papers(
         if semantic_scholar_api_key:
             logger.info("Using Semantic Scholar API key from environment")
 
-    logger.info(f"Retrieving papers: query='{query}', sources={sources}, " f"max_per_source={max_results_per_source}")
+    logger.info(f"Retrieving papers: query='{query}', sources={sources}, max_per_source={max_results_per_source}")
 
     tasks = []
 
@@ -66,9 +64,7 @@ async def retrieve_papers(
     )
 
     if not all_papers:
-        raise ValueError(
-            f"Failed to retrieve papers from all sources. " f"Attempted: {sources}, Failed: {failed_sources}"
-        )
+        raise ValueError(f"Failed to retrieve papers from all sources. Attempted: {sources}, Failed: {failed_sources}")
 
     return all_papers
 
@@ -183,7 +179,7 @@ async def _fetch_from_semantic_scholar(
                 )
             else:
                 logger.info(
-                    f"Semantic Scholar returned {len(papers_with_pdf)} papers with PDF " f"(target: {max_results})"
+                    f"Semantic Scholar returned {len(papers_with_pdf)} papers with PDF (target: {max_results})"
                 )
 
             return papers_with_pdf

@@ -7,3 +7,4 @@ python-dotenv>=1.0.0
 httpx>=0.25.0
 rapidfuzz>=3.0.0
 tenacity>=8.0.0
+loguru>=0.7.0

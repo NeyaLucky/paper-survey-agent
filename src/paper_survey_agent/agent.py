@@ -1,6 +1,7 @@
 import asyncio
-import logging
 from typing import Optional
+
+from loguru import logger
 
 from paper_survey_agent.models.paper import SummarizedPaper
 from paper_survey_agent.tools import (
@@ -9,9 +10,6 @@ from paper_survey_agent.tools import (
     summarize_papers,
     synthesize_survey,
 )
-
-
-logger = logging.getLogger(__name__)
 
 
 class PaperSurveyAgent:

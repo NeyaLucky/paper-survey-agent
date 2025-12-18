@@ -1,12 +1,10 @@
 import asyncio
-import logging
+
+from loguru import logger
 
 from paper_survey_agent.llm.client import llm_client
 from paper_survey_agent.llm.prompts import SURVEY_SYNTHESIS_SYSTEM_PROMPT
 from paper_survey_agent.models.paper import SummarizedPaper
-
-
-logger = logging.getLogger(__name__)
 
 
 def format_papers_for_synthesis(papers: list[SummarizedPaper]) -> str:

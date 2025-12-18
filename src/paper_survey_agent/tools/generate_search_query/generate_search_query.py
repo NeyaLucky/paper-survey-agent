@@ -1,10 +1,7 @@
-import logging
+from loguru import logger
 
 from paper_survey_agent.llm.client import llm_client
 from paper_survey_agent.llm.prompts import SEARCH_QUERY_REFINEMENT_SYSTEM_PROMPT
-
-
-logger = logging.getLogger(__name__)
 
 
 def generate_search_query(user_query: str) -> str:

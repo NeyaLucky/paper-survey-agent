@@ -1,17 +1,14 @@
 import asyncio
 from datetime import datetime
-import logging
 from typing import Optional
 
 import httpx
+from loguru import logger
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from paper_survey_agent.apis.base import BaseScientificAPI
 from paper_survey_agent.models.paper import Paper
 from paper_survey_agent.settings import settings
-
-
-logger = logging.getLogger(__name__)
 
 
 class SemanticScholarAPI(BaseScientificAPI):
@@ -48,7 +45,7 @@ class SemanticScholarAPI(BaseScientificAPI):
             timeout=timeout,
         )
 
-        logger.info(f"Initialized SemanticScholarAPI " f"(authenticated: {bool(api_key)}, timeout: {timeout}s)")
+        logger.info(f"Initialized SemanticScholarAPI (authenticated: {bool(api_key)}, timeout: {timeout}s)")
 
     async def __aenter__(self):
         return self

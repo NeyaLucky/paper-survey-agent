@@ -1,6 +1,7 @@
 import asyncio
-import logging
 import math
+
+from loguru import logger
 
 from paper_survey_agent.models.paper import ProcessedPaper
 from paper_survey_agent.settings import settings
@@ -9,9 +10,6 @@ from paper_survey_agent.tools.search_and_load_papers_txt.utils.maintenance impor
 from paper_survey_agent.tools.search_and_load_papers_txt.utils.ranking import rank_and_deduplicate
 from paper_survey_agent.tools.search_and_load_papers_txt.utils.retrieval import retrieve_papers
 from paper_survey_agent.tools.search_and_load_papers_txt.utils.text_extractor import convert_pdfs_to_text
-
-
-logger = logging.getLogger(__name__)
 
 
 async def search_and_load_papers_txt(query: str) -> list[ProcessedPaper]:
@@ -45,7 +43,7 @@ async def search_and_load_papers_txt(query: str) -> list[ProcessedPaper]:
         current_index = batch_end
 
     if len(downloaded_pdfs) < target_count:
-        logger.warning(f"Pipeline finished with {len(downloaded_pdfs)} papers, " f"short of target {target_count}.")
+        logger.warning(f"Pipeline finished with {len(downloaded_pdfs)} papers, short of target {target_count}.")
 
     txt_paths = await convert_pdfs_to_text(downloaded_pdfs)
 

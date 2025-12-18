@@ -1,16 +1,13 @@
 import asyncio
 import json
-import logging
 from typing import Any
 
 import aiofiles
+from loguru import logger
 
 from paper_survey_agent.llm.client import llm_client
 from paper_survey_agent.llm.prompts import PAPER_SUMMARIZATION_SYSTEM_PROMPT
 from paper_survey_agent.models.paper import ProcessedPaper, SummarizedPaper
-
-
-logger = logging.getLogger(__name__)
 
 
 def parse_llm_json(text: str) -> dict[str, Any]:
